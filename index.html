@@ -15,6 +15,7 @@
     -moz-user-select: none; -khtml-user-select: none; -webkit-user-select: none; user-select: none;
     overflow-x:hidden;
     background: #ddd;
+    position:absolute;
   }
   #navigation{
     position: relative;
@@ -200,11 +201,13 @@
     </div>
   </div>
 <script>
+// Вводится переменная playAnimation, указывающая, запущена ли анимация
 let playAnimation = false;
 frequency.innerHTML=calculateFrequence().toFixed(3);
 movingX(Number(deviation.innerHTML));
 function movingX(dimension){
   let rings=spring.querySelectorAll('div');
+  // Пружина разбивается на кольца (rings), положение которых определяет состояние всей системы
   rings.forEach((ring) => {
   ring.style.height=`${2+dimension/12}vmin`;
   ring.style.width=`${Math.sqrt(40-Math.pow(2+dimension/12,2))}vmin`;
@@ -215,6 +218,7 @@ function changeRadius(operator){
   let circleWidthNumber=Number(circle.style.width.substring(0,circle.style.width.length-4));
   let massChange=0.1/(massNumber);
   frequency.innerHTML=calculateFrequence().toFixed(3);
+  // В зависимости от значения  переменной operator (true) или (false) определяется, увеличивается ли радиус тела или уменьшается
   if (operator){
     circle.style.width=`${(circleWidthNumber*Math.cbrt(1+massChange))}vmin`;
     circle.style.height=circle.style.width;
@@ -227,9 +231,9 @@ function changeRadius(operator){
 animationButton.onclick=function(){
   playAnimation=!playAnimation;
   if (!playAnimation) {
+    movingX(Number(deviation.innerHTML));
     animationButton.innerHTML='Play';
     plate.style.display='none';
-    movingX(Number(deviation.innerHTML));
     timeField.innerHTML='0';
     quantity.innerHTML='0';
     position.innerHTML=deviation.innerHTML;
@@ -243,18 +247,20 @@ animationButton.onclick=function(){
     parameters.querySelectorAll('.step').forEach((button) => {
     button.style.background='#999';
   });
-    let rings = spring.querySelectorAll('.springRing');
     timer(0,0);
 }}
 function timer(time, periods){
   if (!playAnimation) return;
   else{
     time++;
+    // Записываются секунды
     if(time%100==0) timeField.innerHTML=Number(timeField.innerHTML)+1;
+    // Высчитывается, записывается и изменяется позиция
     let positionX=(Number(deviation.innerHTML)*Math.cos(Math.sqrt(Number(springConst.innerHTML)/Number(mass.innerHTML))*time/100));
-    quantity.innerHTML=Math.floor(time/100*calculateFrequence());
     movingX(positionX);
     position.innerHTML=positionX.toFixed(1);
+    // Отсчет периодов
+    quantity.innerHTML=Math.floor(time/100*calculateFrequence());
     setTimeout(timer, 10, time, periods);
   }}
   function calculateFrequence(){
